@@ -1,4 +1,5 @@
 require_relative 'binary.rb'
+require_relative 'animal.rb'
 
 class HashMap < Binary
   attr_accessor :animal_hash_array
@@ -8,7 +9,6 @@ class HashMap < Binary
   end
   def add_animals_to_array(key, value)
     index_of_key = binary_count_of_string([key])
-
     if check_index_availability(index_of_key[0]) == true
       animal_hash_array[index_of_key[0]] = Hash[key, value]
     else
@@ -16,15 +16,15 @@ class HashMap < Binary
     end
   end
 
-  def array_of_hash_keys(hash)
-    hash.keys.map { |key| key.to_s }
+  def array_of_hash_keys(*hash_array)
+    hash_array.map { |hash| hash.name }
   end
 
   def check_index_availability(index)
     animal_hash_array[index].nil?
   end
 
-  def check_keys_exists(keys_to_check)
+  def check_keys_exists(*keys_to_check)
     bin_array_ind = binary_count_of_string(keys_to_check)
 
     check_exists = bin_array_ind.map do |i|
@@ -34,13 +34,16 @@ class HashMap < Binary
     check_exists.map { |key_name| keys_to_check.include?(key_name) }.include?(true)
   end
 
-  def get_hash(string)
-    animal = string[0]
-    index = binary_count_of_string(string)
+  def get_hash(*animals)
+    indexes = binary_count_of_string(animals)
 
-    animal_hash = animal_hash_array[index[0]] 
-
+    animal_hashes = animals.each_with_index.map{ | animal, index |
+    
+    animal_hash = animal_hash_array[indexes[index]] 
+ 
     animal_hash[animal]
+  }
+    animal_hashes
   end
 end
 
@@ -60,22 +63,21 @@ animal_key = %w[Lemur Goat
                 ]
 
 animal_value = [
-  {"name": "Lemur", "legs":4, "likes":["insects", "fruit"] }, 
-  {"name": "Goat", "legs":4, "likes":["grass"] }, 
-  {"name": "Snake", "legs":0, "likes":["insects", "eggs"]},
-  {"name": "Deer", "legs":4, "likes":["grass"]},
-  {"name": "Armadillo", "legs":4, "likes":["insects", "scorpions"] },
-  {"name": "Steer", "legs":4, "likes":["corn", "oats"] },
-  {"name": "Tiger", "legs":4, "likes":["meat"] },
-  {"name": "Guanaco", "legs":4, "likes":["grass"] },
-  {"name": "Otter", "legs":4, "likes":["fish"] },
-  {"name": "Mole", "legs":4, "likes":["worms"] },
-  {"name": "Civet", "legs":4, "likes":["mice", "eggs"] },
-  {"name": "Dugong", "legs":0, "likes":["seagrass"] }
+  Animal.new("Lemur", 4, "insects", "fruit"), 
+  Animal.new("Goat", 4, "grass"), 
+  Animal.new("Snake", 0, "insects", "eggs"),
+  Animal.new("Deer", 4, "grass"),
+  Animal.new("Armadillo", 4, "insects", "scorpions"),
+  Animal.new("Steer", 4, "corn", "oats"),
+  Animal.new("Tiger", 4, "meat"),
+  Animal.new("Guanaco", 4, "grass"),
+  Animal.new("Otter", 4, "fish"),
+  Animal.new("Mole", 4, "worms"),
+  Animal.new("Civet", 4, "mice", "eggs"),
+  Animal.new("Dugong", 0, "seagrass")
 ]
 
 animal_key.each_with_index do |key, index|
-  @hasher.add_animals_to_array(key, animal_value[index])
+  @hasher.add_animals_to_array(key, animal_value[index].to_hash)
 end
 
-puts @hasher.animal_hash_array
